@@ -61,7 +61,7 @@
         <activity android:name="PerformanceLineChart"></activity>
         <activity android:name="BarChartActivitySinus"></activity>
         <activity android:name="ScrollViewActivity"></activity>
-        <activity android:name="ShopChartActivity"></activity>
+        <activity android:name="ShopChartActivity" android:screenOrientation="portrait"></activity>
         <activity android:name="StackedBarActivityNegative"></activity>
         <activity android:name=".realm.RealmWikiExample"></activity>
         <activity android:name=".BarChartPositiveNegative"></activity>
