@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="#09202f"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <ScrollView
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:text="START OF SCROLLVIEW" />
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="150dp">
+
+                <View
+                    android:id="@+id/middle"
+                    android:background="#df575a"
+                    android:layout_width="1px"
+                    android:layout_height="60dp"
+                    android:layout_centerInParent="true" />
+
+                <LinearLayout
+                    android:id="@+id/headLeft"
+                    android:layout_centerVertical="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_toLeftOf="@id/middle"
+                    android:gravity="center"
+                    android:orientation="vertical">
+                    <ImageView
+                        android:id="@+id/headIv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_launcher" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Henry" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/percentRight"
+                    android:layout_centerVertical="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_toRightOf="@id/middle"
+                    android:gravity="center"
+                    android:paddingRight="20dp"
+                    android:paddingLeft="20dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/percentTv"
+                        android:text="42%"
+                        android:textSize="52sp"
+                        android:textColor="#e66760"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:id="@+id/percentContentTv"
+                        android:textColor="@android:color/white"
+                        android:text="Beat 42 percent of retail stores in your area"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </RelativeLayout>
+
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:background="#07263b"
+                android:id="@+id/chartLine"
+                android:layout_width="match_parent"
+                android:layout_height="200dp" />
+
+            <TextView
+                android:visibility="gone"
+                android:text="Promotion Participation"
+                android:background="#07263b"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:textColor="#f56c6e"
+                android:layout_width="match_parent"
+                android:padding="10dp"
+                android:layout_height="wrap_content" />
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/chart1"
+                android:background="#07263b"
+                android:layout_width="match_parent"
+                android:layout_height="260dp" />
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/chartPie"
+                android:layout_marginTop="10dp"
+                android:background="#07263b"
+                android:layout_width="match_parent"
+                android:layout_height="300dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:text="END OF SCROLLVIEW" />
+
+        </LinearLayout>
+
+    </ScrollView>
+</LinearLayout>

@@ -43,6 +43,7 @@ import com.xxmassdeveloper.mpchartexample.RadarChartActivitry;
 import com.xxmassdeveloper.mpchartexample.RealtimeLineChartActivity;
 import com.xxmassdeveloper.mpchartexample.ScatterChartActivity;
 import com.xxmassdeveloper.mpchartexample.ScrollViewActivity;
+import com.xxmassdeveloper.mpchartexample.ShopChartActivity;
 import com.xxmassdeveloper.mpchartexample.StackedBarActivity;
 import com.xxmassdeveloper.mpchartexample.StackedBarActivityNegative;
 import com.xxmassdeveloper.mpchartexample.fragments.SimpleChartDemo;
@@ -267,7 +268,7 @@ public class MainActivity extends Activity implements OnItemClickListener {
                 startActivity(i);
                 break;
             case 26:
-                i = new Intent(this, ScrollViewActivity.class);
+                i = new Intent(this, ShopChartActivity.class);
                 startActivity(i);
                 break;
             case 27:
