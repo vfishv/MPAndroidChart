@@ -78,6 +78,7 @@ public class ShopChartActivity extends DemoBase {
         xAxis.setPosition(XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
         xAxis.setTextColor(colorTextDefault);
+        //xAxis.setGranularity(30f);
 
         mChart.getAxisLeft().setDrawGridLines(true);
         
@@ -135,7 +136,7 @@ public class ShopChartActivity extends DemoBase {
 
         BarData data = new BarData(set);
         data.setValueTextColor(colorTextDefault);
-
+        data.setBarWidth(0.3f);
         mChart.setData(data);
         mChart.invalidate();
         mChart.animateY(800);
