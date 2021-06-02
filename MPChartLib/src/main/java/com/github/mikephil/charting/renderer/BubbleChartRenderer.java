@@ -67,6 +67,9 @@ public class BubbleChartRenderer extends BarLineScatterCandleBubbleRenderer {
 
     protected void drawDataSet(Canvas c, IBubbleDataSet dataSet) {
 
+        if (dataSet.getEntryCount() < 1)
+            return;
+
         Transformer trans = mChart.getTransformer(dataSet.getAxisDependency());
 
         float phaseY = mAnimator.getPhaseY();
@@ -105,7 +108,7 @@ public class BubbleChartRenderer extends BarLineScatterCandleBubbleRenderer {
             if (!mViewPortHandler.isInBoundsRight(pointBuffer[0] - shapeHalf))
                 break;
 
-            final int color = dataSet.getColor((int) entry.getX());
+            final int color = dataSet.getColor(j);
 
             mRenderPaint.setColor(color);
             c.drawCircle(pointBuffer[0], pointBuffer[1], shapeHalf, mRenderPaint);
@@ -131,7 +134,7 @@ public class BubbleChartRenderer extends BarLineScatterCandleBubbleRenderer {
 
                 IBubbleDataSet dataSet = dataSets.get(i);
 
-                if (!shouldDrawValues(dataSet))
+                if (!shouldDrawValues(dataSet) || dataSet.getEntryCount() < 1)
                     continue;
 
                 // apply the text-styling defined by the DataSet

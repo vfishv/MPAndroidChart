@@ -17,7 +17,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore.Images;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -209,18 +209,14 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
         setWillNotDraw(false);
         // setLayerType(View.LAYER_TYPE_HARDWARE, null);
 
-        if (Build.VERSION.SDK_INT < 11) {
-            mAnimator = new ChartAnimator();
-        } else {
-            mAnimator = new ChartAnimator(new AnimatorUpdateListener() {
+        mAnimator = new ChartAnimator(new AnimatorUpdateListener() {
 
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    // ViewCompat.postInvalidateOnAnimation(Chart.this);
-                    postInvalidate();
-                }
-            });
-        }
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                // ViewCompat.postInvalidateOnAnimation(Chart.this);
+                postInvalidate();
+            }
+        });
 
         // initialize the utils
         Utils.init(getContext());
@@ -403,8 +399,23 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
             boolean hasText = !TextUtils.isEmpty(mNoDataText);
 
             if (hasText) {
-                MPPointF c = getCenter();
-                canvas.drawText(mNoDataText, c.x, c.y, mInfoPaint);
+                MPPointF pt = getCenter();
+
+                switch (mInfoPaint.getTextAlign()) {
+                    case LEFT:
+                        pt.x = 0;
+                        canvas.drawText(mNoDataText, pt.x, pt.y, mInfoPaint);
+                        break;
+
+                    case RIGHT:
+                        pt.x *= 2.0;
+                        canvas.drawText(mNoDataText, pt.x, pt.y, mInfoPaint);
+                        break;
+
+                    default:
+                        canvas.drawText(mNoDataText, pt.x, pt.y, mInfoPaint);
+                        break;
+                }
             }
 
             return;
@@ -559,9 +570,34 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
      * This method will call the listener.
      * @param x The x-value to highlight
      * @param dataSetIndex The dataset index to search in
+     * @param dataIndex The data index to search in (only used in CombinedChartView currently)
+     */
+    public void highlightValue(float x, int dataSetIndex, int dataIndex) {
+        highlightValue(x, dataSetIndex, dataIndex, true);
+    }
+
+    /**
+     * Highlights any y-value at the given x-value in the given DataSet.
+     * Provide -1 as the dataSetIndex to undo all highlighting.
+     * This method will call the listener.
+     * @param x The x-value to highlight
+     * @param dataSetIndex The dataset index to search in
      */
     public void highlightValue(float x, int dataSetIndex) {
-        highlightValue(x, dataSetIndex, true);
+        highlightValue(x, dataSetIndex, -1, true);
+    }
+
+    /**
+     * Highlights the value at the given x-value and y-value in the given DataSet.
+     * Provide -1 as the dataSetIndex to undo all highlighting.
+     * This method will call the listener.
+     * @param x The x-value to highlight
+     * @param y The y-value to highlight. Supply `NaN` for "any"
+     * @param dataSetIndex The dataset index to search in
+     * @param dataIndex The data index to search in (only used in CombinedChartView currently)
+     */
+    public void highlightValue(float x, float y, int dataSetIndex, int dataIndex) {
+        highlightValue(x, y, dataSetIndex, dataIndex, true);
     }
 
     /**
@@ -573,7 +609,19 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
      * @param dataSetIndex The dataset index to search in
      */
     public void highlightValue(float x, float y, int dataSetIndex) {
-        highlightValue(x, y, dataSetIndex, true);
+        highlightValue(x, y, dataSetIndex, -1, true);
+    }
+
+    /**
+     * Highlights any y-value at the given x-value in the given DataSet.
+     * Provide -1 as the dataSetIndex to undo all highlighting.
+     * @param x The x-value to highlight
+     * @param dataSetIndex The dataset index to search in
+     * @param dataIndex The data index to search in (only used in CombinedChartView currently)
+     * @param callListener Should the listener be called for this change
+     */
+    public void highlightValue(float x, int dataSetIndex, int dataIndex, boolean callListener) {
+        highlightValue(x, Float.NaN, dataSetIndex, dataIndex, callListener);
     }
 
     /**
@@ -584,7 +632,25 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
      * @param callListener Should the listener be called for this change
      */
     public void highlightValue(float x, int dataSetIndex, boolean callListener) {
-        highlightValue(x, Float.NaN, dataSetIndex, callListener);
+        highlightValue(x, Float.NaN, dataSetIndex, -1, callListener);
+    }
+
+    /**
+     * Highlights any y-value at the given x-value in the given DataSet.
+     * Provide -1 as the dataSetIndex to undo all highlighting.
+     * @param x The x-value to highlight
+     * @param y The y-value to highlight. Supply `NaN` for "any"
+     * @param dataSetIndex The dataset index to search in
+     * @param dataIndex The data index to search in (only used in CombinedChartView currently)
+     * @param callListener Should the listener be called for this change
+     */
+    public void highlightValue(float x, float y, int dataSetIndex, int dataIndex, boolean callListener) {
+
+        if (dataSetIndex < 0 || dataSetIndex >= mData.getDataSetCount()) {
+            highlightValue(null, callListener);
+        } else {
+            highlightValue(new Highlight(x, y, dataSetIndex, dataIndex), callListener);
+        }
     }
 
     /**
@@ -596,12 +662,7 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
      * @param callListener Should the listener be called for this change
      */
     public void highlightValue(float x, float y, int dataSetIndex, boolean callListener) {
-
-        if (dataSetIndex < 0 || dataSetIndex >= mData.getDataSetCount()) {
-            highlightValue(null, callListener);
-        } else {
-            highlightValue(new Highlight(x, y, dataSetIndex), callListener);
-        }
+        highlightValue(x, y, dataSetIndex, -1, callListener);
     }
 
     /**
@@ -893,60 +954,6 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
     /** CODE BELOW FOR PREDEFINED EASING OPTIONS */
 
     /**
-     * Animates the drawing / rendering of the chart on both x- and y-axis with
-     * the specified animation time. If animate(...) is called, no further
-     * calling of invalidate() is necessary to refresh the chart. ANIMATIONS
-     * ONLY WORK FOR API LEVEL 11 (Android 3.0.x) AND HIGHER.
-     *
-     * @param durationMillisX
-     * @param durationMillisY
-     * @param easingX         a predefined easing option
-     * @param easingY         a predefined easing option
-     *
-     * @deprecated Use {@link #animateXY(int, int, EasingFunction, EasingFunction)}
-     * @see #animateXY(int, int, EasingFunction, EasingFunction)
-     */
-    @Deprecated
-    public void animateXY(int durationMillisX, int durationMillisY, Easing.EasingOption easingX,
-                          Easing.EasingOption easingY) {
-        mAnimator.animateXY(durationMillisX, durationMillisY, easingX, easingY);
-    }
-
-    /**
-     * Animates the rendering of the chart on the x-axis with the specified
-     * animation time. If animate(...) is called, no further calling of
-     * invalidate() is necessary to refresh the chart. ANIMATIONS ONLY WORK FOR
-     * API LEVEL 11 (Android 3.0.x) AND HIGHER.
-     *
-     * @param durationMillis
-     * @param easing         a predefined easing option
-     *
-     * @deprecated Use {@link #animateX(int, EasingFunction)}
-     * @see #animateX(int, EasingFunction)
-     */
-    @Deprecated
-    public void animateX(int durationMillis, Easing.EasingOption easing) {
-        mAnimator.animateX(durationMillis, easing);
-    }
-
-    /**
-     * Animates the rendering of the chart on the y-axis with the specified
-     * animation time. If animate(...) is called, no further calling of
-     * invalidate() is necessary to refresh the chart. ANIMATIONS ONLY WORK FOR
-     * API LEVEL 11 (Android 3.0.x) AND HIGHER.
-     *
-     * @param durationMillis
-     * @param easing         a predefined easing option
-     *
-     * @deprecated Use {@link #animateY(int, EasingFunction)}
-     * @see #animateY(int, EasingFunction)
-     */
-    @Deprecated
-    public void animateY(int durationMillis, Easing.EasingOption easing) {
-        mAnimator.animateY(durationMillis, easing);
-    }
-
-    /**
      * ################ ################ ################ ################
      * ANIMATIONS ONLY WORK FOR API LEVEL 11 (Android 3.0.x) AND HIGHER.
      */
@@ -1219,6 +1226,15 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
      */
     public void setNoDataTextTypeface(Typeface tf) {
         mInfoPaint.setTypeface(tf);
+    }
+
+    /**
+     * alignment of the no data text
+     *
+     * @param align
+     */
+    public void setNoDataTextAlignment(Align align) {
+        mInfoPaint.setTextAlign(align);
     }
 
     /**
@@ -1527,6 +1543,8 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
      */
     public boolean saveToPath(String title, String pathOnSD) {
 
+
+
         Bitmap b = getChartBitmap();
 
         OutputStream stream = null;
@@ -1642,7 +1660,18 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
      * @return returns true if saving was successful, false if not
      */
     public boolean saveToGallery(String fileName, int quality) {
-        return saveToGallery(fileName, "", "MPAndroidChart-Library Save", Bitmap.CompressFormat.JPEG, quality);
+        return saveToGallery(fileName, "", "MPAndroidChart-Library Save", Bitmap.CompressFormat.PNG, quality);
+    }
+
+    /**
+     * Saves the current state of the chart to the gallery as a PNG image.
+     * NOTE: Needs permission WRITE_EXTERNAL_STORAGE
+     *
+     * @param fileName e.g. "my_image"
+     * @return returns true if saving was successful, false if not
+     */
+    public boolean saveToGallery(String fileName) {
+        return saveToGallery(fileName, "", "MPAndroidChart-Library Save", Bitmap.CompressFormat.PNG, 40);
     }
 
     /**
@@ -1739,16 +1768,10 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
      */
     public void setHardwareAccelerationEnabled(boolean enabled) {
 
-        if (android.os.Build.VERSION.SDK_INT >= 11) {
-
-            if (enabled)
-                setLayerType(View.LAYER_TYPE_HARDWARE, null);
-            else
-                setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        } else {
-            Log.e(LOG_TAG,
-                    "Cannot enable/disable hardware acceleration for devices below API level 11.");
-        }
+        if (enabled)
+            setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        else
+            setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     }
 
     @Override

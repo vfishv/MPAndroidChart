@@ -185,7 +185,6 @@ public class LineChartRenderer extends LineRadarRenderer {
 
     protected void drawCubicBezier(ILineDataSet dataSet) {
 
-        float phaseX = Math.max(0.f, Math.min(1.f, mAnimator.getPhaseX()));
         float phaseY = mAnimator.getPhaseY();
 
         Transformer trans = mChart.getTransformer(dataSet.getAxisDependency());
@@ -323,10 +322,14 @@ public class LineChartRenderer extends LineRadarRenderer {
         // more than 1 color
         if (dataSet.getColors().size() > 1) {
 
-            if (mLineBuffer.length <= pointsPerEntryPair * 2)
-                mLineBuffer = new float[pointsPerEntryPair * 4];
+            int numberOfFloats = pointsPerEntryPair * 2;
 
-            for (int j = mXBounds.min; j <= mXBounds.range + mXBounds.min; j++) {
+            if (mLineBuffer.length <= numberOfFloats)
+                mLineBuffer = new float[numberOfFloats * 2];
+
+            int max = mXBounds.min + mXBounds.range;
+
+            for (int j = mXBounds.min; j < max; j++) {
 
                 Entry e = dataSet.getEntryForIndex(j);
                 if (e == null) continue;
@@ -357,16 +360,26 @@ public class LineChartRenderer extends LineRadarRenderer {
                     mLineBuffer[3] = mLineBuffer[1];
                 }
 
+                // Determine the start and end coordinates of the line, and make sure they differ.
+                float firstCoordinateX = mLineBuffer[0];
+                float firstCoordinateY = mLineBuffer[1];
+                float lastCoordinateX = mLineBuffer[numberOfFloats - 2];
+                float lastCoordinateY = mLineBuffer[numberOfFloats - 1];
+
+                if (firstCoordinateX == lastCoordinateX &&
+                        firstCoordinateY == lastCoordinateY)
+                    continue;
+
                 trans.pointValuesToPixel(mLineBuffer);
 
-                if (!mViewPortHandler.isInBoundsRight(mLineBuffer[0]))
+                if (!mViewPortHandler.isInBoundsRight(firstCoordinateX))
                     break;
 
                 // make sure the lines don't do shitty things outside
                 // bounds
-                if (!mViewPortHandler.isInBoundsLeft(mLineBuffer[2])
-                        || (!mViewPortHandler.isInBoundsTop(mLineBuffer[1]) && !mViewPortHandler
-                        .isInBoundsBottom(mLineBuffer[3])))
+                if (!mViewPortHandler.isInBoundsLeft(lastCoordinateX) ||
+                        !mViewPortHandler.isInBoundsTop(Math.max(firstCoordinateY, lastCoordinateY)) ||
+                        !mViewPortHandler.isInBoundsBottom(Math.min(firstCoordinateY, lastCoordinateY)))
                     continue;
 
                 // get the color that is set for this line-segment
@@ -497,12 +510,12 @@ public class LineChartRenderer extends LineRadarRenderer {
 
         // create a new path
         Entry currentEntry = null;
-        Entry previousEntry = null;
+        Entry previousEntry = entry;
         for (int x = startIndex + 1; x <= endIndex; x++) {
 
             currentEntry = dataSet.getEntryForIndex(x);
 
-            if (isDrawSteppedEnabled && previousEntry != null) {
+            if (isDrawSteppedEnabled) {
                 filled.lineTo(currentEntry.getX(), previousEntry.getY() * phaseY);
             }
 
@@ -530,7 +543,7 @@ public class LineChartRenderer extends LineRadarRenderer {
 
                 ILineDataSet dataSet = dataSets.get(i);
 
-                if (!shouldDrawValues(dataSet))
+                if (!shouldDrawValues(dataSet) || dataSet.getEntryCount() < 1)
                     continue;
 
                 // apply the text-styling defined by the DataSet
