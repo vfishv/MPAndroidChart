@@ -23,28 +23,6 @@
 1. [License](#licence)
 1. [Creators](#creators)
 
-## [Realtime Graphing Solution | SciChart](https://scichart.com/android-chart-features?source=MPAndroidChart)
-
-<img align="left" width="190" height="190" style="margin:0px 15px 0px 0px" src="https://raw.github.com/PhilJay/MPChart/master/design/other/left.png">
-<img align="right" width="90" height="90" style="margin:0px 15px 0px 0px" src="https://raw.github.com/PhilJay/MPChart/master/design/other/right.png">
-
-MPAndroidChart is free software, as a result **dynamic & realtime data is not officially supported**. If you are looking for an enterprise-grade chart solution with extreme realtime performance and tech support, we recommend
-<a href="https://scichart.com/android-chart-features?source=MPAndroidChart" target="_blank">SciChart Android</a>.
-
-<img align="right" width="270" height="60" style="margin:0px 0px 0px 0px" src="https://raw.github.com/PhilJay/MPChart/master/design/other/bottom.png">
-
-All MPAndroidChart users are entitled to a special **discount of 5%** off the <a href="https://store.scichart.com?productTab=Android&CouponCode=MPANDROIDCHART&source=MPAndroidChart" target="_blank">SciChart store</a>, using the following discount code: **MPANDROIDCHART**
-
-<br/>
-
-## [Bi-Weekly Coding Newsletter](https://weeklycoding.com)
-
-Sign up for my [coding newsletter](https://weeklycoding.com) to get quick updates on Kotlin and Android development related topics.
-
-<h2 id="quick-start">Quick Start :chart_with_upwards_trend:</h2>
-
-Add the library to your Android project, then check out the examples below!
-
 ### Gradle Setup
 
 ```gradle
@@ -133,7 +111,7 @@ If you like this library, please tell others about it :two_hearts: :two_hearts:
 [![Share on Google+](https://github.com/PhilJay/MPAndroidChart/blob/master/design/googleplus_icon.png)](https://plus.google.com/share?url=https://github.com/PhilJay/MPAndroidChart)
 [![Share on Facebook](https://github.com/PhilJay/MPAndroidChart/blob/master/design/facebook_icon.png)](https://www.facebook.com/sharer/sharer.php?u=https://github.com/PhilJay/MPAndroidChart)
 
-You can follow me on Twitter [**@PhilippJahoda**](https://twitter.com/PhilippJahoda) or sign up for my [**coding newsletter**](https://weeklycoding.com).
+If you like, you can follow me on Twitter [**@PhilippJahoda**](https://twitter.com/PhilippJahoda).
 
 <br/>
 
@@ -209,7 +187,7 @@ You can follow me on Twitter [**@PhilippJahoda**](https://twitter.com/PhilippJah
 
 <h1 id="license">License :page_facing_up:</h1>
 
-Copyright 2019 Philipp Jahoda
+Copyright 2020 Philipp Jahoda
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
